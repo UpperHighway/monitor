@@ -57,14 +57,14 @@
 
 		list($protocol,, $referer_host) = explode("/", $referer, 4);
 		list($referer_host) = explode(":", $referer_host);
-		if (($protocol != "http:") && ($protocol == "https:")) {
+		if (($protocol != "http:") && ($protocol != "https:")) {
 			return false;
 		}
 
-		$valid_hostnames = array($_SERVER["HTTP_HOST"]);
-		if (in_array($referer_host, $valid_hostnames)) {
+		list($http_host) = explode(":", $_SERVER["HTTP_HOST"]);
+		if ($http_host == $referer_host) {
 			return false;
-		}
+		}   
 
 		$message = sprintf("CSRF attempt from %s blocked", $_SERVER["HTTP_REFERER"]);
 

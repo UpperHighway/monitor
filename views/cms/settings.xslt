@@ -4,10 +4,12 @@
 <xsl:include href="../banshee/tablemanager.xslt" />
 
 <xsl:template match="tablemanager/label">
-<table class="label">
-<tr><td>Key:</td><td><xsl:value-of select="key" /></td></tr>
-<tr><td>Type:</td><td><xsl:value-of select="type" /></td></tr>
-</table>
+<div class="labels">
+<label>Key:</label>
+<div class="form-control" disabled="disabled"><xsl:value-of select="key" /></div>
+<label>Type:</label>
+<div class="form-control" disabled="disabled"><xsl:value-of select="type" /></div>
+</div>
 </xsl:template>
 
 <xsl:template match="content">

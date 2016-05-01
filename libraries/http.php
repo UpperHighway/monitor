@@ -229,7 +229,7 @@
 			}
 
 			$remote = sprintf("%s://%s:%s", $protocol, $this->connect_host, $this->connect_port);
-			if (($sock = stream_socket_client($remote, $errno, $errstr, $this->timeout, STREAM_CLIENT_CONNECT, $context)) === false) {
+			if (($sock = @stream_socket_client($remote, $errno, $errstr, $this->timeout, STREAM_CLIENT_CONNECT, $context)) === false) {
 				return false;
 			}
 

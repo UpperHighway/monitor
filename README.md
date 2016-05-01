@@ -10,7 +10,7 @@ Use the following Hiawatha configuration for this website.
 UrlToolkit {
 	ToolkitID = monitor
 	RequestURI isfile Return
-	Match ^/(css|images|js)/ Return
+	Match ^/(css|files|fonts|images|js)(/|$) Return
 	Match ^/(favicon.ico|robots.txt)$ Return
 	Match [^?]*(\?.*)? Rewrite /index.php$1
 }

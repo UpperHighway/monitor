@@ -176,7 +176,7 @@
 		foreach ($stats as $label => $stat) {
 			$header = "<h3>".$label."</h3>\n".
 				"<table class=\"stats\">\n".
-				"<tr><th>Type</th><th>Value</th><th>= &#916;% of</th><th>".$type."</th></tr>\n";
+				"<thead>\n<tr><th>Type</th><th>Value</th><th>= &#916;% of</th><th>".$type."</th></tr>\n</thead>\n<tbody>\n";
 			$header_set = false;
 
 			$columns = array_keys($stat["details"]);
@@ -209,7 +209,7 @@
 			}
 
 			if ($header_set) {
-				$report["content"] .= "</table>\n";
+				$report["content"] .= "</tbody>\n</table>\n";
 			}
 		}
 
@@ -218,13 +218,13 @@
 		if (($events = $db->execute($query, $webserver["id"])) != false) {
 			$report["content"] .= "<h3>Events</h3>\n";
 			$report["content"] .= "<table class=\"events\">\n";
-			$report["content"] .= "<tr><th>Time</th><th>Event</th></tr>\n";
+			$report["content"] .= "<thead>\n<tr><th>Time</th><th>Event</th></tr>\n</thead>\n<tbody>\n";
 
 			foreach ($events as $event) {
-				$report["content"] .= "<tr><td>".date("H:i:s", $event["timestamp"])."</td><td>".$event["event"]."</td></tr>\n";
+				$report["content"] .= "<tr><td>".date("H:i:s", $event["timestamp"])."</td><td>".htmlentities($event["event"])."</td></tr>\n";
 			}
 
-			$report["content"] .= "</table>\n";
+			$report["content"] .= "</tbody>\n</table>\n";
 
 			$add_count++;
 		}
@@ -263,7 +263,7 @@
 		return;
 	}
 
-	$query = "select * from webservers w, webserver_user l ".
+	$query = "select w.* from webservers w, webserver_user l ".
 	         "where w.id=l.webserver_id and l.user_id=%d order by w.name";
 	foreach ($users as $user) {
 		if (($webservers = $db->execute($query, $user["id"])) == false) {
@@ -273,7 +273,7 @@
 		$report_content = "";
 		$report_alerts = array();
 		foreach ($webservers as $webserver) {
-			if (($report = generate_report($db, $settings, $user, $webserver)) == false) {
+			if (($report = generate_report($db, $settings, $user, $webserver)) === false) {
 				continue;
 			}
 			$report_content .= $report["content"];

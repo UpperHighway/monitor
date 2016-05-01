@@ -136,7 +136,7 @@
 
 		if (($hostname_id = get_hostname_id($db, $hostname)) == false) {
 			print "Error getting hostname id\n";
-			continue;
+			return;
 		}
 
 		list($date, $hour) = get_date_hour($timestamp_begin, $timestamp_end);
@@ -220,7 +220,7 @@
 
 		if (($hostname_id = get_hostname_id($db, $hostname)) == false) {
 			print "Error getting hostname id\n";
-			continue;
+			return;
 		}
 
 		list($date, $hour) = get_date_hour($timestamp_begin, $timestamp_end);

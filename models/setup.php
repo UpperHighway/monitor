@@ -21,6 +21,9 @@
 				 */
 				if ((DB_HOSTNAME == "localhost") && (DB_DATABASE == "monitor") && (DB_USERNAME == "monitor") && (DB_PASSWORD == "monitor")) {
 					return "db_settings";
+				} else if (strpos(DB_PASSWORD, "'") !== false) {
+					$this->output->add_system_message("A single quote is not allowed in the password!");
+					return "db_settings";
 				}
 
 				return "create_db";
@@ -31,8 +34,7 @@
 				return "import_sql";
 			}
 
-			$settings = new settings($db);
-			if ($settings->database_version == null) {
+			if ($this->settings->database_version < $this->latest_database_version()) {
 				return "update_db";
 			}
 
@@ -143,7 +145,7 @@
 		/* Import SQL script from file
 		 */
 		public function import_sql() {
-			system("mysql -u \"".DB_USERNAME."\" --password=\"".DB_PASSWORD."\" \"".DB_DATABASE."\" < ../database/mysql.sql", $result);
+			system("mysql -h '".DB_HOSTNAME."' -u '".DB_USERNAME."' --password='".DB_PASSWORD."' '".DB_DATABASE."' < ../database/mysql.sql", $result);
 			if ($result != 0) {
 				$this->output->add_message("Error while importing database tables.");
 				return false;
@@ -155,35 +157,24 @@
 			return true;
 		}
 
-		/* Update database
+		/* Collect latest database version from update_database() function
 		 */
-		public function update_database() {
-			$tables = array("cgi_statistics", "host_statistics", "server_statistics");
-			foreach ($tables as $table) {
-				$this->db->query("alter table %S add %S date not null after %S", $table, "date", "id");
-				$this->db->query("alter table %S add %S tinyint unsigned not null after %S", $table, "hour", "date");
-				$this->db->query("update %S set %S=date(%S), %S=%d", $table, "date", "timestamp_begin", "hour", 0);
-				$this->db->query("alter table %S drop %S", $table, "timestamp_begin");
-				$this->db->query("alter table %S drop %S", $table, "timestamp_end");
-			}
+		private function latest_database_version() {
+			$old_db = $this->db;
+			$old_settings = $this->settings;
+			$this->db = new dummy_object();
+			$this->settings = new dummy_object();
+			$this->settings->database_version = 0;
 
-			$this->db->query("alter table %S add index(%S)", "cgi_statistics", "date");
-			$this->db->query("alter table %S add index(%S)", "cgi_statistics", "hour");
-			$this->db->query("alter table %S add index(%S)", "host_statistics", "date");
-			$this->db->query("alter table %S add index(%S)", "host_statistics", "hour");
-			$this->db->query("alter table %S add index(%S)", "server_statistics", "date");
-			$this->db->query("alter table %S add index(%S)", "server_statistics", "hour");
+			$this->update_database();
+			$version = $this->settings->database_version;
 
-			$settings = new settings($this->db);
-			$settings->dashboard_threshold_change = 150;
-			$settings->dashboard_threshold_value = 5;
-			$settings->dashboard_page_refresh = 1;
-			$settings->report_alert_high = 300;
-			$settings->report_alert_medium = 150;
-			$settings->report_history_days = 15;
-			$settings->report_skip_normal = false;
-			$settings->report_use_median = true;
-			$settings->database_version = 103;
+			unset($this->db);
+			unset($this->settings);
+			$this->db = $old_db;
+			$this->settings = $old_settings;
+
+			return $version;
 		}
 
 		/* Add setting when missing
@@ -200,13 +191,70 @@
 			return $this->db->insert("settings", $entry) !== false;
 		}
 
-		/* Ensure settings
+		/* Update database
 		 */
-		public function ensure_settings() {
-			$this->ensure_setting("hiawatha_cache_enabled", "boolean", "false");
-			$this->ensure_setting("hiawatha_cache_default_time", "integer", "3600");
-			$this->ensure_setting("session_timeout", "integer", "3600");
-			$this->ensure_setting("session_persistent", "boolean", "false");
+		public function update_database() {
+			if ($this->settings->database_version < 101) {
+				$this->settings->database_version = 101;
+			}
+
+			if ($this->settings->database_version < 102) {
+				$this->ensure_setting("hiawatha_cache_enabled", "boolean", "false");
+				$this->ensure_setting("hiawatha_cache_default_time", "integer", "3600");
+				$this->ensure_setting("session_timeout", "integer", "3600");
+				$this->ensure_setting("session_persistent", "boolean", "false");
+
+				$this->settings->database_version = 102;
+			}
+
+			if ($this->settings->database_version < 103) {
+				$tables = array("cgi_statistics", "host_statistics", "server_statistics");
+				foreach ($tables as $table) {
+					$this->db->query("alter table %S add %S date not null after %S", $table, "date", "id");
+					$this->db->query("alter table %S add %S tinyint unsigned not null after %S", $table, "hour", "date");
+					$this->db->query("update %S set %S=date(%S), %S=%d", $table, "date", "timestamp_begin", "hour", 0);
+					$this->db->query("alter table %S drop %S", $table, "timestamp_begin");
+					$this->db->query("alter table %S drop %S", $table, "timestamp_end");
+				}
+
+				$this->db->query("alter table %S add index(%S)", "cgi_statistics", "date");
+				$this->db->query("alter table %S add index(%S)", "cgi_statistics", "hour");
+				$this->db->query("alter table %S add index(%S)", "host_statistics", "date");
+				$this->db->query("alter table %S add index(%S)", "host_statistics", "hour");
+				$this->db->query("alter table %S add index(%S)", "server_statistics", "date");
+				$this->db->query("alter table %S add index(%S)", "server_statistics", "hour");
+
+				$this->settings->dashboard_threshold_change = 150;
+				$this->settings->dashboard_threshold_value = 5;
+				$this->settings->dashboard_page_refresh = 1;
+				$this->settings->report_alert_high = 300;
+				$this->settings->report_alert_medium = 150;
+				$this->settings->report_history_days = 15;
+				$this->settings->report_skip_normal = false;
+				$this->settings->report_use_median = true;
+
+				$this->settings->database_version = 103;
+			}
+
+			if ($this->settings->database_version < 104) {
+				$this->settings->database_version = 104;
+			}
+		}
+	}
+
+	class dummy_object {
+		private $cache = array();
+
+		public function __set($key, $value) {
+			$this->cache[$key] = $value;
+		}
+
+		public function __get($key) {
+			return $this->cache[$key];
+		}
+
+		public function __call($func, $args) {
+			return false;
 		}
 	}
 ?>

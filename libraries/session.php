@@ -25,11 +25,7 @@
 			$this->db = $db;
 			$this->settings = $settings;
 
-			if ($_SERVER["HTTP_X_BANSHEE_SESSION"] == "disk") {
-				$this->use_database = false;
-			} else {
-				$this->use_database = ($this->settings->session_timeout >= ini_get("session.gc_maxlifetime"));
-			}
+			$this->use_database = ($this->settings->session_timeout >= ini_get("session.gc_maxlifetime"));
 
 			if ($this->use_database) {
 				$this->db->query("delete from sessions where expire<=now()");

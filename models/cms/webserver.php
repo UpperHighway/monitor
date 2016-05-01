@@ -139,6 +139,7 @@
 			$queries = array(
 				array("delete from webserver_user where webserver_id=%d", $webserver_id),
 				array("delete from events where webserver_id=%d", $webserver_id),
+				array("delete from cgi_statistics where webserver_id=%d", $webserver_id),
 				array("delete from host_statistics where webserver_id=%d", $webserver_id),
 				array("delete from server_statistics where webserver_id=%d", $webserver_id),
 				array("delete from webservers where id=%d", $webserver_id));

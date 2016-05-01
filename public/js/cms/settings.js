@@ -1,4 +1,4 @@
 $(document).ready(function() {
-	labels = $("table.label").detach();
-	$("table.tablemanager").before(labels);
+	labels = $("div.labels").detach();
+	$("form").before(labels);
 });

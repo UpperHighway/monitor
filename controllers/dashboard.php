@@ -100,7 +100,7 @@
 
 					foreach ($parts as $part) {
 						if (in_array(substr(ltrim($part), 0, 3), array("TLS", "SSL"))) {
-							$version = trim(substr($part, 4), " ()");
+							$version = trim(substr($part, 4), " (v)");
 							if (version_compare($version, $_SESSION["latest_mbedtls_version"], "<")) {
 								$webserver["uptodate"] .= " (mbed TLS out of date)";
 							}

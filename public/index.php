@@ -31,6 +31,13 @@
 		$_language = new language($_database, $_page, $_output);
 	}
 
+	/* Logging
+	 */
+	if (library_exists("logging") && ($_user->is_admin == false)) {
+		$logging = new logging($_database, $_page);
+		$logging->execute();
+	}
+
 	/* Prevent Cross-Site Request Forgery
 	 */
 	prevent_csrf($_output, $_user);

@@ -2,21 +2,29 @@
 
 <head>
 <style type="text/css">
+	* {
+		margin:0;
+		padding:0;
+	}
 	body {
 		font-family:courier-sans;
 		background-color:#c0c0c0;
 		font-size:9pt;
-		padding:20px 0 20px 0;
 	}
 	div.container {
-		width:550px;
+		width:100%;
 		background-color:#ffffff;
-		box-shadow:15px 10px 5px #606060;
-		padding:30px 40px;
 		margin:0 auto;
 	}
+	div.container > div {
+		padding:10px 20px;
+	}
 	p {
-		margin:20px 0 0 0;
+		margin-top:10px;
+	}
+	p.footer {
+		font-style:italic;
+		margin-top:30px;
 	}
 	h2 + p {
 		margin-top:5px;
@@ -24,22 +32,23 @@
 	h1 {
 		font-size:16pt;
 		color:#1010c0;
-		margin:0;
 	}
 	h2 {
 		font-size:14pt;
 		color:#6060ff;
 		padding-bottom:5px;
-		margin-bottom:0;
+		margin-top:15px;
 		border-bottom:1px dashed #ff8000;
 	}
 	h3 {
 		font-size:12pt;
-		margin-bottom:0;
+		margin-top:10px;
 	}
 	table {
 		font-size:inherit;
-		width:500px;
+		width:100%;
+		border-spacing:2px;
+		border:1px solid #c0c0ff;
 	}
 	table th {
 		background-color:#c0c0ff;
@@ -59,22 +68,40 @@
 		color:#ff0000;
 	}
 	table.stats td:nth-child(n+2) {
-		width:75px;
+		width:50px;
 		text-align:right;
 	}
-	table.events th:nth-child(2) {
-		width:400px;
+	table.events th:nth-child(1) {
+		width:50px;
+	}
+	@media (max-width:767px) {	
+		h1 {
+			display:none;
+		}
+	}
+	@media (min-width:767px) {
+		body {
+			padding-top:20px;
+		}
+		div.container {
+			max-width:500px;
+			box-shadow:15px 10px 5px #606060;
+			margin:0 auto 50px auto;
+		}
+		div.container > div {
+			padding:30px 40px;
+		}
 	}
 </style>
 </head>
 
 <body>
-<div class="container">
+<div class="container"><div>
 <h1>Daily Hiawatha Monitor report</h1>
 <p>Alerts in this report for: [ALERTS]</p>
 [CONTENT]
-<p>The [TYPE] is calculated over the last [HISTORY] days. This report was generated at [TIMESTAMP].</p>
-</div>
+<p class="footer">The [TYPE] is calculated over the last [HISTORY] days. This report was generated at [TIMESTAMP].</p>
+</div></div>
 </body>
 
 </html>

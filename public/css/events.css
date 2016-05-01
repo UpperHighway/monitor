@@ -1,12 +1,13 @@
-div.content div.hidess {
-	position:absolute;
-	top:16px;
-	right:300px;
+@media (min-width:768px) {
+	div.content div.hidess {
+		position:absolute;
+		margin-top:-29px;
+		right:300px;
+	}
 }
 
 @media (max-width:767px) {
     div.content div.hidess {
-		position:static;
 		float:right;
 	}
 }

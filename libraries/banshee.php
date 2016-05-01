@@ -9,7 +9,7 @@
 	/* For internal usage. Only change if you know what you're doing!
 	 */
 	define("BANSHEE_VERSION", "5.0");
-	define("MONITOR_VERSION", "1.3");
+	define("MONITOR_VERSION", "1.4");
 	define("ADMIN_ROLE_ID", 1);
 	define("YES", 1);
 	define("NO", 0);
