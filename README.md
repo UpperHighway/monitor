@@ -7,6 +7,7 @@ CONFIGURE YOUR WEBSERVER
 =========================
 Use the following Hiawatha configuration for this website.
 
+```
 UrlToolkit {
 	ToolkitID = monitor
 	RequestURI isfile Return
@@ -22,18 +23,19 @@ VirtualHost {
 	AccessLogfile = /var/www/monitor/logfiles/access.log
 	ErrorLogfile = /var/www/monitor/logfiles/error.log
 	ExecuteCGI = yes
-#	UseFastCGI = PHP5 # Use if you use PHP as a FastCGI daemon
+	UseFastCGI = PHP5 # Use if you use PHP as a FastCGI daemon
 	TimeForCGI = 15
 	UseToolkit = monitor
 }
+```
 
 
 CONFIGURE PHP
 ==============
-The Hiawatha Monitor requires the following PHP modules:
-	php5-mysql and php5-xsl
+The Hiawatha Monitor requires the php5-mysql and php5-xsl PHP modules.
 
 Use the following PHP settings:
+
 	allow_url_include = Off
 	cgi.fix_pathinfo = 0 (when using FastCGI PHP), 1 (otherwise)
 	date.timezone = <your timezone>
